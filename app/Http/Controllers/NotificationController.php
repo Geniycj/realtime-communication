@@ -20,13 +20,6 @@ class NotificationController extends Controller
         return $user->notifications()->get();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -47,21 +40,6 @@ class NotificationController extends Controller
             ->response();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Notification $notification)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateNotificationRequest $request, Notification $notification)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.

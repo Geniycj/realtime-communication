@@ -48,4 +48,5 @@ class Message extends Notification
             'data' => $this->data
         ];
     }
+
 }

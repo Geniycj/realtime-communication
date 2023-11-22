@@ -15,24 +15,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+
+        return (UserResource::collection(User::all()))
+            ->response();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreUserRequest $request)
-    {
-
-    }
 
     /**
      * Display the specified resource.
@@ -43,20 +30,13 @@ class UserController extends Controller
             ->response();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(User $user, UpdateUserRequest $request)
     {
-        //
+        $user->update($request->validate());
     }
 
     /**
@@ -64,6 +44,6 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $user->delete();
     }
 }

@@ -22,7 +22,11 @@ class StoreProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "name" => "sometimes|string",
+            "phone" => "sometimes|string",
+            "surname" => "sometimes|string",
+            "middle_name" => "sometimes|string",
+            "notification" => "sometimes|boolean",
         ];
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -19,32 +20,38 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum'])->get('/me', function (Request $request) {
     return $request->user();
-});
+})->name('user.me');
 
 
 Route::controller(UserController::class)
     ->prefix('users')
     ->middleware(['auth:sanctum'])
     ->group(function () {
-        Route::get('/{user}', 'show');
-        Route::get('/', 'index');
+        Route::get('/{user}', 'show')->name('users.show');
+        Route::get('/', 'index')->name('users.index');
     });
 
 Route::controller(ProfileController::class)
     ->prefix('profiles')
     ->middleware(['auth:sanctum'])
     ->group(function () {
-        Route::get('/{profile}', 'show');
-        Route::put('/{profile}', 'update');
+        Route::get('/{profile}', 'show')->name('profile.show');
+        Route::put('/{profile}', 'update')->name('profile.update.api');
     });
 
 Route::controller(NotificationController::class)
     ->prefix('notifications')
     ->middleware(['auth:sanctum'])
     ->group(function () {
-        Route::get('/{user}', 'index');
-        Route::post('/{user}', 'store');
-        Route::delete('/{notification}', 'destroy');
+        Route::get('/{user}', 'index')->name('notifications.index');
+        Route::post('/{user}', 'store')->name('notifications.store');
+        Route::post('/delete/{notification}', 'destroy')->name('notifications.destroy');
     });
 
-require __DIR__.'/auth.php';
+
+
+Route::post('login', [AuthenticatedSessionController::class, 'store'])
+    ->name('login.api');
+
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('logout');
