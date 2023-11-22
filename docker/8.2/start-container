@@ -15,6 +15,7 @@ fi
 chmod -R ugo+rw /.composer
 chmod -R ugo+rw ./storage ./bootstrap
 chown sail:sail ./storage ./bootstrap
+composer update
 php artisan config:cache
 php artisan migrate
 php artisan horizon:publish

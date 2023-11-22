@@ -17,9 +17,13 @@ To run the application you need to have docker installed on your machine.
 composer install
 ```
 
+For default configuration you need to run the following commands:
+
+```bash
+cp .env.example .env
+```
 
 To run the application you need to run the following commands:
-
 
 ```bash
 ./vendor/bin/sail up -d
