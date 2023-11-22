@@ -2,20 +2,27 @@
     <v-app>
         <v-main>
             <v-container>
-                <v-select v-model="selectedUser" :item-props="itemProps" :items="results" label="Users select" variant="outlined" @click="fetchResults" :loading="loading">
+              <v-row>
+              <v-col cols="12">
+                <v-select hide-details v-model="selectedUser" :item-props="itemProps" :items="results" label="Users select" variant="outlined" @click="fetchResults" :loading="loading" />
+              </v-col>
 
-                </v-select>
-                <v-text-field label="Text of Event" v-model="eventText">
-
-                </v-text-field>
-                <v-btn color="primary" @click="sendEvent"> Send event</v-btn>
-                <v-row>
+              <v-col cols="12">
+                <v-text-field single-line  variant="outlined" hide-details label="Text of Event" v-model="eventText" />
+              </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="auto">
+                  <v-btn :disabled="!buttonIsActive" color="primary" @click="sendEvent"> Send event</v-btn>
+                </v-col>
+              </v-row>
+                  <v-row>
                     <v-col cols="12">
                         <v-card :loading="loading2">
                             <v-card-title class="text-center">
                                 <v-row>
                                     <v-col cols="auto">
-                                        Result
+                                      My events list:
                                     </v-col>
                                     <v-spacer />
                                     <v-btn icon variant="text" @click="fetchNotifications">
@@ -24,8 +31,6 @@
                                 </v-row>
                             </v-card-title>
                             <v-card-text>
-                                <div>My events list:
-                                </div>
                                 <v-data-table :headers="headers" :items="notifications">
                                     <template #item.actions="{item}">
                                         <v-btn icon variant="text" @click="deleteEvent(item.id)">
@@ -47,10 +52,12 @@
 <script lang="ts" setup>
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
-import {ref, onMounted} from "vue";
+import {ref, onMounted, onBeforeUnmount, computed} from "vue";
+import { useToast } from "vue-toastification";
 interface ResultsType {
     page: any
 }
+const toast = useToast();
 const props = defineProps<ResultsType>();
 const format = ref('json');
 const loading = ref(false);
@@ -60,6 +67,8 @@ const results = ref([]);
 const selectedUser = ref(0);
 const csrf = ref();
 const activeUserIds = ref([]);
+const echo = ref();
+const buttonIsActive = computed(() => selectedUser.value > 0 && eventText.value !== '')
 const fetchResults = async (e) => {
     loading.value = true
     format.value = e.output_format
@@ -105,13 +114,15 @@ const headers = [
         sortable: false,
     }
 ];
-function itemProps (item) {
-    return {
-        title: item.name,
-        subtitle: item.email + " ("+ item.id+")",
-        value: item.id,
-        disabled: true,
-    }
+function itemProps(item) {
+  const isUserActive = activeUserIds.value.includes(item.id);
+
+  return {
+    title: item.name,
+    subtitle: item.email + " (" + item.id + ")",
+    value: item.id,
+    disabled: !isUserActive,
+  };
 }
 const fetchNotifications = async (e) => {
     loading2.value = true
@@ -135,9 +146,9 @@ onMounted(()=>{
     if(!csrf.value){
         window.location.reload();
     }
-    fetchNotifications()
+    fetchNotifications();
     const pusher = Pusher;
-    const echo = new Echo({
+    echo.value = new Echo({
         broadcaster: "pusher",
         key: "888",
         cluster: "mt1",
@@ -147,31 +158,38 @@ onMounted(()=>{
         disableStats: false,
     });
     console.log('Connecting to websocket...')
-    echo.channel("private-App.Models.User."+ props.page.props.auth.user.id)
+    echo.value.channel("private-App.Models.User."+ props.page.props.auth.user.id)
    .notification((notification) => {
        console.log(notification)
+        toast.info("New message: " + notification.data)
        notifications.value.push(notification)
     })
-        echo.join('Online.Users')
+        echo.value.join('Online.Users')
         .here((users) => {
           // ...
           console.log('Here')
-          activeUserIds.value.splice(0, activeUserIds.value.length, ...users);
+          let ids = users.map((item)=>item.id);
+          activeUserIds.value.splice(0, activeUserIds.value.length, ...ids);
         })
         .joining((userJoining) => {
           console.log('Joining')
           addUser(userJoining);
+          toast.success('User '+ userJoining.name +" joined platform!")
           console.log(userJoining.id);
           console.log(userJoining.name);
         })
         .leaving((userLeaving) => {
           console.log('userLeaving')
-          removeUser(userLeaving.id)
+          removeUser(userLeaving)
+          toast.info('User '+ userLeaving.name +" left platform!")
           console.log(userLeaving.name);
         })
         .error((error) => {
           console.error(error);
-        });;
+        });
+})
+onBeforeUnmount(()=>{
+  echo.value.leave('Online.Users')
 })
 const deleteEvent = async (id) => {
     try {
@@ -203,12 +221,13 @@ const sendEvent = async () => {
         });
     } catch (error) {
         console.error('Error sending event:', error);
+        toast.error('Failed to send event')
     }
 }
-function removeUser(id){
-  activeUserIds.value = activeUserIds.value.filter(item => item.id !== id);
+function removeUser(user){
+  activeUserIds.value = activeUserIds.value.filter(item => item !== user.id);
 }
 function addUser(user){
-  activeUserIds.value.push(user);
+  activeUserIds.value.push(user.id);
 }
 </script>

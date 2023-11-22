@@ -24,6 +24,7 @@
         "laravel-echo": "^1.15.3",
         "pusher-js": "^8.3.0",
         "vue": "3.2.33",
+        "vue-toastification": "^2.0.0-rc.5",
         "vue3-json-viewer": "^2.2.2",
         "vue3-xml-viewer": "^0.0.12",
         "vuetify": "^3.3.22"
