@@ -11,10 +11,24 @@
 
 To run the application you need to have docker installed on your machine.
 
+&& run composer install
+
+```bash
+composer install
+```
+
+
 To run the application you need to run the following commands:
+
 
 ```bash
 ./vendor/bin/sail up -d
+```
+
+To create test data you need to run command:
+
+```bash
+./vendor/bin/sail artisan db:seed --class=UsersSeeder
 ```
 
 Assigment contain frontend part as well as backend part.
