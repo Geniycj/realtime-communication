@@ -17,10 +17,15 @@ To run the application you need to have docker installed on your machine.
 composer install
 ```
 
-To run the application you need to run the following commands:
+
+To run the application for the first time, you must run the following commands:
 
 ```bash
 ./vendor/bin/sail up -d && yarn install && yarn dev
+```
+next time it is enough to run:
+```bash
+./vendor/bin/sail up -d && yarn dev
 ```
 
 To create test data you need to run command:
@@ -31,19 +36,18 @@ To create test data you need to run command:
 
 Assigment contain frontend part as well as backend part.
 
-Front is on '/' route of the application.
+Front is on 'http://localhost' route of the application.
 
 Also there are routes for backend part:
 
 ```angular2html
-
-DELETE     api/notifications/{notification}
-GET        api/notifications/{user}
-POST       api/notifications/{user}
-GET        api/profiles/{profile}
-PUT        api/profiles/{profile}
-GET        api/users
-GET        api/users/{user}
+GET   api/notifications/{user}
+POST  api/notifications/{user}
+POST  api/notifications/delete/{notification}
+GET   api/profiles/{profile}
+PUT   api/profiles/{profile}
+GET   api/users
+GET   api/users/{user}
 ```
 You can get full documentation using the collection postman\realtime-communication.json
 
