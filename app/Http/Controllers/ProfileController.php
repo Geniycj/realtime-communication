@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Profile;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,7 +40,14 @@ class ProfileController extends Controller
         $request->user()->save();
 
         $profile = $request->user()->profile;
-        $profile->update($requestValidated);
+        if ($profile){
+            $profile->update($requestValidated);
+        }else{
+            $requestValidated['user_id'] = $request->user()->id;
+
+            $profile = new Profile($requestValidated);
+            $profile->save();
+        }
 
         return Redirect::route('profile.edit');
     }

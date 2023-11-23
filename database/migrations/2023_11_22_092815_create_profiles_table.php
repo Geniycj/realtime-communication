@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('surname')->nullable();
             $table->string('middle_name')->nullable();
-            $table->boolean('notification')->nullable();
+            $table->boolean('notification')->default(false);
             $table->timestamps();
         });
     }

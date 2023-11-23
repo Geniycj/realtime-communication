@@ -49,5 +49,5 @@ PUT   api/profiles/{profile}
 GET   api/users
 GET   api/users/{user}
 ```
-You can get full documentation using the collection postman\realtime-communication.json
+You can get full documentation using the collection postman\realtime-communication.postman_collection.json
 
