@@ -20,8 +20,6 @@ php artisan config:cache
 php artisan migrate
 php artisan horizon:publish
 php artisan route:clear
-npm run dev
-
 
 if [ $# -gt 0 ]; then
     exec gosu $WWWUSER "$@"
