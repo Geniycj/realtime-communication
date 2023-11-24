@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+if [ ! -z "$WWWUSER" ]; then
+    usermod -u $WWWUSER sail
+fi
+
+if [ ! -d /.composer ]; then
+    mkdir /.composer
+fi
+
+if [ ! -f .env ]; then
+    cp .env.example .env
+fi
+
+chmod -R ugo+rw /.composer
+chmod -R ugo+rw ./storage ./bootstrap
+chown sail:sail ./storage ./bootstrap
+php artisan config:cache
+php artisan migrate
+php artisan horizon:publish
+php artisan route:clear
+
+if [ $# -gt 0 ]; then
+    exec gosu $WWWUSER "$@"
+else
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+fi
